@@ -1,0 +1,200 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "cortex-xdr.fullname" . }}
+  labels: {{- include "cortex-xdr.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace.name }}
+spec:
+  selector:
+    matchLabels: {{- include "cortex-xdr.selectorLabels" . | nindent 6 }}
+
+  updateStrategy:
+    type: {{ .Values.daemonset.updateStrategy }}
+
+  template:
+    metadata:
+      labels: {{- include "cortex-xdr.labels" . | nindent 8 }}
+
+      {{- if semverCompare "<1.30-0" .Capabilities.KubeVersion.Version }}
+      annotations:
+        {{ toYaml .Values.daemonset.podAnnotations }}
+      {{- end }}
+
+    spec:
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "cortex-xdr.serviceAccountName" . }}
+      {{- end }}
+
+      {{- with .Values.daemonset.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      hostNetwork: true
+      hostPID: true
+      hostIPC: true
+
+      {{- with .Values.daemonset.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.daemonset.affinity }}
+      affinity: {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- if .Values.daemonset.priorityClassName }}
+      priorityClassName: {{ .Values.daemonset.priorityClassName }}
+      {{- end }}
+
+      containers:
+      - name: cortex-agent
+        image: {{ .Values.daemonset.image.repository }}:{{ .Values.daemonset.image.tag }}
+        imagePullPolicy: {{ .Values.daemonset.image.pullPolicy }}
+
+        securityContext:
+          {{- $selinuxType := include "cortex-xdr.xdrSelinuxOptionsType" . | trim }}
+          {{- if ne $selinuxType "" }}
+          seLinuxOptions:
+            type: {{ $selinuxType | quote }}
+          {{- end }}
+          {{- /*
+          Prior to Kubernetes v1.30, AppArmor was specified through annotations.
+          https://kubernetes.io/docs/tutorials/security/apparmor/#specifying-apparmor-confinement
+          */ -}}
+          {{- if semverCompare ">=1.30-0" .Capabilities.KubeVersion.Version }}
+          appArmorProfile:
+            type: Unconfined
+          {{- end }}
+          capabilities:
+            add:
+            - SYS_ADMIN
+            - SYSLOG
+            - SYS_CHROOT
+            {{- if not .Values.platform.talos }}
+            - SYS_MODULE
+            {{- end }}
+            - SYS_PTRACE
+            - SYS_RESOURCE
+            - SYS_RAWIO
+            - DAC_OVERRIDE
+            - DAC_READ_SEARCH
+            - NET_ADMIN
+            - NET_RAW
+            - IPC_LOCK
+            - FOWNER
+            - KILL
+            - SETGID
+            - SETUID
+
+        env:
+        - name: XDR_HOST_ROOT
+          value: "/host-fs"
+        - name: XDR_POD_INFO
+          value: "/var/run/pod-info"
+        - name: XDR_CLUSTER_NAME_URL
+          value: "metadata2"
+        - name: XDR_PROXY_LIST
+          value: {{ .Values.agent.proxyList | quote }}
+        - name: XDR_ENDPOINT_TAGS
+          value: {{ .Values.agent.endpointTags | quote }}
+        {{- if .Values.platform.talos }}
+        - name: XDR_BPF_DEBUGFS_MOUNT
+          value: {{ .Values.platform.talos | quote }}
+        {{- end }}
+        - name: XDR_CLUSTER_NAME
+          value: {{ .Values.agent.clusterName | quote }}
+        - name: XDR_VAR_LOG_HOST_PATH
+          value:  {{ include "cortex-xdr.XdrVarLogHostPath" . | quote }}
+
+        volumeMounts:
+
+        - name: host-fs
+          mountPath: /host-fs
+          readOnly: true
+
+        - name: var-log
+          mountPath: /var/log
+
+        - name: host-km-directory
+          mountPath: /lib/modules
+
+        - name: pod-info
+          mountPath: /var/run/pod-info
+          readOnly: true
+
+        {{- if not .Values.platform.talos }}
+        - name: agent-ids
+          mountPath: /etc/traps
+        {{- end }}
+
+        {{- if .Values.deploymentSecret.create }}
+        - name: deployment-secrets
+          mountPath: /opt/traps/config/deployment
+          readOnly: true
+        {{- end }}
+
+        resources:
+{{ toYaml .Values.daemonset.resources | indent 10 }}
+
+      terminationGracePeriodSeconds: {{ .Values.daemonset.terminationGracePeriodSeconds }}
+
+      volumes:
+      - name: host-fs
+        hostPath:
+          path: /
+          type: Directory
+
+      - name: var-log
+        hostPath:
+          path: {{ include "cortex-xdr.XdrVarLogHostPath" . | quote }}
+          type: DirectoryOrCreate
+
+      - name: host-km-directory
+        hostPath:
+          path: /lib/modules
+          type: Directory
+
+      - name: pod-info
+        downwardAPI:
+          items:
+          - path: uid
+            fieldRef:
+              fieldPath: metadata.uid
+          - path: name
+            fieldRef:
+              fieldPath: metadata.name
+          - path: labels
+            fieldRef:
+              fieldPath: metadata.labels
+          - path: annotations
+            fieldRef:
+              fieldPath: metadata.annotations
+
+      {{- if .Values.platform.gcos }}
+      - name: agent-ids
+        hostPath:
+          path: /var/traps/etc/traps
+          type: DirectoryOrCreate
+      {{- else if .Values.platform.bottlerocket }}
+      - name: agent-ids
+        hostPath:
+          path: /local/traps/etc/traps
+          type: DirectoryOrCreate
+      {{- else if not .Values.platform.talos }}
+      - name: agent-ids
+        hostPath:
+          path: /etc/traps
+          type: DirectoryOrCreate
+      {{- end }}
+
+      {{- if .Values.deploymentSecret.create }}
+      - name: deployment-secrets
+        secret:
+          secretName: {{ include "cortex-xdr.deploymentSecretName" . }}
+      {{- end }}
+
+      {{- if (include "cortex-xdr.dockerPullSecretName" .) }}
+      imagePullSecrets:
+      - name: {{ include "cortex-xdr.dockerPullSecretName" . }}
+      {{- end }}

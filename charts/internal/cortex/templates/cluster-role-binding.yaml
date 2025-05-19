@@ -1,0 +1,15 @@
+{{- if .Values.rbac.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "cortex-xdr.clusterRoleBindingName" . }}
+  labels: {{- include "cortex-xdr.labels" . | nindent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "cortex-xdr.serviceAccountName" . }}
+  namespace: {{ .Values.namespace.name }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "cortex-xdr.clusterRoleName" . }}
+  apiGroup: rbac.authorization.k8s.io
+{{- end -}}

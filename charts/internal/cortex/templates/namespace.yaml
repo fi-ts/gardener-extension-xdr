@@ -1,0 +1,13 @@
+{{- if .Values.namespace.create -}}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace.name }}
+  labels: {{- include "cortex-xdr.labels" . | nindent 4 }}
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/warn: privileged
+    pod-security.kubernetes.io/audit: privileged
+    {{- if .Values.serviceAccount.openshift.scc.create }}
+    security.openshift.io/scc.podSecurityLabelSync: "false"
+    {{- end }}
+{{- end }}
