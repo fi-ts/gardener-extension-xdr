@@ -12,8 +12,8 @@ package v1alpha1
 import (
 	unsafe "unsafe"
 
+	config "github.com/fi-ts/gardener-extension-xdr/pkg/apis/config"
 	configv1alpha1 "github.com/gardener/gardener/extensions/pkg/apis/config/v1alpha1"
-	config "github.com/metal-stack/gardener-extension-xdr/pkg/apis/config"
 	conversion "k8s.io/apimachinery/pkg/conversion"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )

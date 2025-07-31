@@ -1,8 +1,8 @@
 package install
 
 import (
-	"github.com/metal-stack/gardener-extension-xdr/pkg/apis/xdr"
-	"github.com/metal-stack/gardener-extension-xdr/pkg/apis/xdr/v1alpha1"
+	"github.com/fi-ts/gardener-extension-xdr/pkg/apis/xdr"
+	"github.com/fi-ts/gardener-extension-xdr/pkg/apis/xdr/v1alpha1"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"

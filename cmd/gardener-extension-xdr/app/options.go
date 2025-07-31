@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/metal-stack/gardener-extension-xdr/pkg/apis/xdr/install"
+	"github.com/fi-ts/gardener-extension-xdr/pkg/apis/xdr/install"
 
 	corev1 "k8s.io/api/core/v1"
 
@@ -13,8 +13,8 @@ import (
 	heartbeatcontroller "github.com/gardener/gardener/extensions/pkg/controller/heartbeat"
 	heartbeatcmd "github.com/gardener/gardener/extensions/pkg/controller/heartbeat/cmd"
 
-	xdrcmd "github.com/metal-stack/gardener-extension-xdr/pkg/cmd"
-	controller "github.com/metal-stack/gardener-extension-xdr/pkg/controller/xdr"
+	xdrcmd "github.com/fi-ts/gardener-extension-xdr/pkg/cmd"
+	controller "github.com/fi-ts/gardener-extension-xdr/pkg/controller/xdr"
 
 	controllercmd "github.com/gardener/gardener/extensions/pkg/controller/cmd"
 	"github.com/gardener/gardener/extensions/pkg/util"

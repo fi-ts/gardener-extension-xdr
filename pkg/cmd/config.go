@@ -4,9 +4,9 @@ import (
 	"errors"
 	"os"
 
+	configapi "github.com/fi-ts/gardener-extension-xdr/pkg/apis/config"
+	"github.com/fi-ts/gardener-extension-xdr/pkg/apis/config/v1alpha1"
 	healthcheckconfig "github.com/gardener/gardener/extensions/pkg/apis/config/v1alpha1"
-	configapi "github.com/metal-stack/gardener-extension-xdr/pkg/apis/config"
-	"github.com/metal-stack/gardener-extension-xdr/pkg/apis/config/v1alpha1"
 
 	"github.com/spf13/pflag"
 	"k8s.io/apimachinery/pkg/runtime"

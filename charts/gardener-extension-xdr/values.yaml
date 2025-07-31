@@ -1,5 +1,5 @@
 image:
-  repository: ghcr.io/metal-stack/gardener-extension-xdr
+  repository: ghcr.io/fi-ts/gardener-extension-xdr
   tag: latest
   pullPolicy: IfNotPresent
 

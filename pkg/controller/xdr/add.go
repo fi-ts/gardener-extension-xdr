@@ -8,7 +8,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	"github.com/metal-stack/gardener-extension-xdr/pkg/apis/config"
+	"github.com/fi-ts/gardener-extension-xdr/pkg/apis/config"
 )
 
 const (

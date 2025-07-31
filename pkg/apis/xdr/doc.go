@@ -3,4 +3,4 @@
 
 //go:generate ../../../hack/update-codegen.sh
 
-package xdr // import "github.com/metal-stack/gardener-extension-xdr/pkg/apis/xdr"
+package xdr // import "github.com/fi-ts/gardener-extension-xdr/pkg/apis/xdr"

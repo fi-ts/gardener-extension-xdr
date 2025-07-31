@@ -7,7 +7,7 @@ import (
 	runtimelog "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
 
-	"github.com/metal-stack/gardener-extension-xdr/cmd/gardener-extension-xdr/app"
+	"github.com/fi-ts/gardener-extension-xdr/cmd/gardener-extension-xdr/app"
 )
 
 func main() {

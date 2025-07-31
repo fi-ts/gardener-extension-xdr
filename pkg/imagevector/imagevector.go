@@ -4,7 +4,7 @@ import (
 	"github.com/gardener/gardener/pkg/utils/imagevector"
 	"k8s.io/apimachinery/pkg/util/runtime"
 
-	"github.com/metal-stack/gardener-extension-xdr/charts"
+	"github.com/fi-ts/gardener-extension-xdr/charts"
 )
 
 var imageVector imagevector.ImageVector

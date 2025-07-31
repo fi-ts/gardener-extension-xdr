@@ -12,7 +12,7 @@ package v1alpha1
 import (
 	unsafe "unsafe"
 
-	xdr "github.com/metal-stack/gardener-extension-xdr/pkg/apis/xdr"
+	xdr "github.com/fi-ts/gardener-extension-xdr/pkg/apis/xdr"
 	conversion "k8s.io/apimachinery/pkg/conversion"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )

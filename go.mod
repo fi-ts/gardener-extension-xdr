@@ -1,4 +1,4 @@
-module github.com/metal-stack/gardener-extension-xdr
+module github.com/fi-ts/gardener-extension-xdr
 
 go 1.24
 
