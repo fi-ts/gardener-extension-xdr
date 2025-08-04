@@ -52,5 +52,5 @@ jobs:
             tag: ${{ env.tag }}
             path: charts/${{ github.event.repository.name }}
             registry: ${{ env.REGISTRY }}
-            registry_username: ${{ secrets.DOCKER_REGISTRY_USER }}
-            registry_password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+            registry_username: ${{ github.actor }}
+            registry_password: ${{ secrets.GITHUB_TOKEN }}
