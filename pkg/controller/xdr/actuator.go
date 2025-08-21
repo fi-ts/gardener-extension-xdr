@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	"github.com/fi-ts/gardener-extension-xdr/charts"
 	"github.com/fi-ts/gardener-extension-xdr/pkg/apis/xdr/v1alpha1"
@@ -81,7 +82,7 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 
 	endpointTags := fmt.Sprintf("tenant=%s;clusterid=%s", tenant, clusterid)
 	distributionId := getValue(xdrConfig.DistributionId, a.config.DefaultDistributionId)
-	proxyList := getSliceValue(xdrConfig.ProxyList, a.config.DefaultProxyList)
+	proxyList := getSliceValue(xdrConfig.ProxyList, []string{})
 
 	if xdrConfig.CustomTag == "" {
 		endpointTags = fmt.Sprintf("%s,custom=%s", endpointTags, xdrConfig.CustomTag)
@@ -96,7 +97,7 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 			"endpointTags":   endpointTags,
 			"clusterName":    clustername,
 			"distributionId": distributionId,
-			"proxyList":      proxyList,
+			"proxyList":      strings.Join(proxyList, ","),
 		},
 		"daemonset": map[string]any{
 			"image": map[string]any{
