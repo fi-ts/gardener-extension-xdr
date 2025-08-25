@@ -82,7 +82,7 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 
 	endpointTags := fmt.Sprintf("tenant=%s;clusterid=%s", tenant, clusterid)
 	distributionId := getValue(xdrConfig.DistributionId, a.config.DefaultDistributionId)
-	proxyList := getSliceValue(xdrConfig.ProxyList, []string{})
+	proxyList := getSliceValue(xdrConfig.ProxyList, a.config.DefaultProxyList)
 
 	if xdrConfig.CustomTag == "" {
 		endpointTags = fmt.Sprintf("%s,custom=%s", endpointTags, xdrConfig.CustomTag)
