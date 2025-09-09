@@ -58,8 +58,8 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 	}
 
 	tm := tag.TagMap(cluster.Shoot.Annotations)
-	clusterid, _ := tm.Value(tag.ClusterID)
-	clustername, _ := tm.Value(tag.ClusterName)
+	clusterid := cluster.Shoot.UID
+	clustername := cluster.Shoot.Name
 	tenant, _ := tm.Value(tag.ClusterTenant)
 
 	cortextImage, err := imagevector.ImageVector().FindImage("cortex-agent")
