@@ -38,6 +38,7 @@ func RegisterConversions(s *runtime.Scheme) error {
 }
 
 func autoConvert_v1alpha1_XDRConfig_To_xdr_XDRConfig(in *XDRConfig, out *xdr.XDRConfig, s conversion.Scope) error {
+	out.NoProxy = in.NoProxy
 	out.ProxyList = *(*[]string)(unsafe.Pointer(&in.ProxyList))
 	out.DistributionId = in.DistributionId
 	out.CustomTag = in.CustomTag
@@ -50,6 +51,7 @@ func Convert_v1alpha1_XDRConfig_To_xdr_XDRConfig(in *XDRConfig, out *xdr.XDRConf
 }
 
 func autoConvert_xdr_XDRConfig_To_v1alpha1_XDRConfig(in *xdr.XDRConfig, out *XDRConfig, s conversion.Scope) error {
+	out.NoProxy = in.NoProxy
 	out.ProxyList = *(*[]string)(unsafe.Pointer(&in.ProxyList))
 	out.DistributionId = in.DistributionId
 	out.CustomTag = in.CustomTag

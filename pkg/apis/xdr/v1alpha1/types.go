@@ -9,6 +9,7 @@ import (
 // XDRConfig defines the configuration for the xdr controller.
 type XDRConfig struct {
 	metav1.TypeMeta `json:",inline"`
+	NoProxy         bool     `json:"noProxy,omitempty"`
 	ProxyList       []string `json:"proxyList,omitempty"`
 	DistributionId  string   `json:"distributionId,omitempty"`
 	CustomTag       string   `json:"customTag,omitempty"`
