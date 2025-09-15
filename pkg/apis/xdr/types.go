@@ -13,4 +13,5 @@ type XDRConfig struct {
 	ProxyList      []string
 	DistributionId string
 	CustomTag      string
+	Tenant         string
 }

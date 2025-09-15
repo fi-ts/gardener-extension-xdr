@@ -42,6 +42,7 @@ func autoConvert_v1alpha1_XDRConfig_To_xdr_XDRConfig(in *XDRConfig, out *xdr.XDR
 	out.ProxyList = *(*[]string)(unsafe.Pointer(&in.ProxyList))
 	out.DistributionId = in.DistributionId
 	out.CustomTag = in.CustomTag
+	out.Tenant = in.Tenant
 	return nil
 }
 
@@ -55,6 +56,7 @@ func autoConvert_xdr_XDRConfig_To_v1alpha1_XDRConfig(in *xdr.XDRConfig, out *XDR
 	out.ProxyList = *(*[]string)(unsafe.Pointer(&in.ProxyList))
 	out.DistributionId = in.DistributionId
 	out.CustomTag = in.CustomTag
+	out.Tenant = in.Tenant
 	return nil
 }
 

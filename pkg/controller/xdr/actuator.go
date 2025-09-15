@@ -18,7 +18,6 @@ import (
 	gardener "github.com/gardener/gardener/pkg/client/kubernetes"
 	"github.com/gardener/gardener/pkg/utils/managedresources"
 	"github.com/go-logr/logr"
-	"github.com/metal-stack/metal-lib/pkg/tag"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -57,10 +56,8 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 		return fmt.Errorf("failed to get cluster: %w", err)
 	}
 
-	tm := tag.TagMap(cluster.Shoot.Annotations)
 	clusterid := cluster.Shoot.UID
 	clustername := cluster.Shoot.Name
-	tenant, _ := tm.Value(tag.ClusterTenant)
 
 	cortextImage, err := imagevector.ImageVector().FindImage("cortex-agent")
 	if err != nil {
@@ -80,7 +77,7 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 		}
 	}
 
-	endpointTags := fmt.Sprintf("tenant=%s;clusterid=%s", tenant, clusterid)
+	endpointTags := fmt.Sprintf("tenant=%s;clusterid=%s", xdrConfig.Tenant, clusterid)
 	distributionId := getValue(xdrConfig.DistributionId, a.config.DefaultDistributionId)
 	proxyList := getSliceValue(xdrConfig.ProxyList, []string{})
 	if len(proxyList) == 0 && !xdrConfig.NoProxy {

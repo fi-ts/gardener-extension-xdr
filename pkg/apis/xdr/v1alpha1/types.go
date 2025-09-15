@@ -13,4 +13,5 @@ type XDRConfig struct {
 	ProxyList       []string `json:"proxyList,omitempty"`
 	DistributionId  string   `json:"distributionId,omitempty"`
 	CustomTag       string   `json:"customTag,omitempty"`
+	Tenant          string   `json:"tenant,omitempty"`
 }
