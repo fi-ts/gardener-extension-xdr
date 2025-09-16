@@ -89,6 +89,7 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 	}
 
 	rc, err := ci.RenderEmbeddedFS(charts.InternalChart, filepath.Join("internal", charts.CortexChartsPath), charts.CortextName, charts.CortexNamespace, map[string]any{
+		"proxyAddresses": proxyList,
 		"namespace": map[string]any{
 			"create": false,
 			"name":   charts.CortexNamespace,

@@ -107,4 +107,4 @@ fetch-upstream-helm:
 	curl -sSL https://github.com/PaloAltoNetworks/cortex-helm/releases/download/v${CORTEX_HELM_RELEASE_VERSION}/cortex-xdr-${CORTEX_HELM_RELEASE_VERSION}.tgz \
 		| tar -xz -C ./charts/internal/cortex --strip-components=1 cortex-xdr/
 	mv charts/internal/cortex/templates/_helpers.tpl charts/internal/cortex/templates/helpers.tpl
-
+	cp ./charts/internal/addons/* ./charts/internal/cortex/templates/
