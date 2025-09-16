@@ -7,10 +7,7 @@ metadata:
   name: xdr-proxy-access
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ include "gardener-extension-xdr.name" . }}
-    chart: {{ include "gardener-extension-xdr.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    labels: {{- include "cortex-xdr.labels" . | nindent 4 }}
 spec:
   egress:
   {{- range .Values.xdr.proxyAddresses }}
