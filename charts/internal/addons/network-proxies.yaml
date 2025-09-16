@@ -12,21 +12,16 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  description: "Allow access to XDR proxy servers"
   egress:
   {{- range .Values.xdr.proxyAddresses }}
   {{- $parts := split ":" . }}
   {{- if and $parts._0 $parts._1 }}
   - to:
-    - ipBlock:
-        cidr: {{ $parts._0 }}/32
+    - cidr: {{ $parts._0 }}/32
     ports:
     - protocol: TCP
       port: {{ $parts._1 | int }}
   {{- end }}
   {{- end }}
-  podSelector: {}
-  policyTypes:
-  - Egress
 {{- end }}
 {{- end }}
