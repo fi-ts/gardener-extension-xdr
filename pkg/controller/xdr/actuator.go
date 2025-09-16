@@ -97,7 +97,7 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 			Name: "clusterwidenetworkpolicies.metal-stack.io",
 		},
 	}
-	_, shootClient, err := util.NewClientForShoot(ctx, a.client, charts.CortexNamespace, client.Options{}, extensionsconfigv1alpha1.RESTOptions{})
+	_, shootClient, err := util.NewClientForShoot(ctx, a.client, ex.Namespace, client.Options{}, extensionsconfigv1alpha1.RESTOptions{})
 
 	if err != nil {
 		return fmt.Errorf("failed to create shoot client: %w", err)
