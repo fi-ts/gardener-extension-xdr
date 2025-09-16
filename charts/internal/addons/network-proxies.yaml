@@ -1,5 +1,6 @@
 # After changing this file, please run `make patch-upstream-helm` and regenerate the CRD
 {{- if .Capabilities.APIVersions.Has "metal-stack.io/v1" }}
+# capabilities ok
 {{- if .Values.proxyAddresses }}
 apiVersion: metal-stack.io/v1
 kind: ClusterwideNetworkPolicy
