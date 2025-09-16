@@ -4,7 +4,7 @@ apiVersion: metal-stack.io/v1
 kind: ClusterwideNetworkPolicy
 metadata:
   name: xdr-proxy-access
-  namespace: {{ .Release.Namespace }}
+  namespace: firewall
   labels:
     labels: {{- include "cortex-xdr.labels" . | nindent 4 }}
 spec:
