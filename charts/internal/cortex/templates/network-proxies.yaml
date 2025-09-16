@@ -1,6 +1,6 @@
 # After changing this file, please run `make patch-upstream-helm` and regenerate the CRD
-{{ if .Capabilities.APIVersions.Has "metal-stack.io/v1/ClusterwideNetworkPolicy" -}}
-{{- if .Values.xdr.proxyAddresses }}
+{{- if .Capabilities.APIVersions.Has "metal-stack.io/v1" }}
+{{- if .Values.proxyAddresses }}
 apiVersion: metal-stack.io/v1
 kind: ClusterwideNetworkPolicy
 metadata:
@@ -10,7 +10,7 @@ metadata:
     labels: {{- include "cortex-xdr.labels" . | nindent 4 }}
 spec:
   egress:
-  {{- range .Values.xdr.proxyAddresses }}
+  {{- range .Values.proxyAddresses }}
   {{- $parts := split ":" . }}
   {{- if and $parts._0 $parts._1 }}
   - to:
