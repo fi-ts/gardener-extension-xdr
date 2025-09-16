@@ -102,9 +102,12 @@ push-to-gardener-local:
 	docker build -f Dockerfile.dev -t ghcr.io/fi-ts/gardener-extension-xdr:latest .
 	kind --name gardener-local load docker-image ghcr.io/fi-ts/gardener-extension-xdr:latest
 
+patch-upstream-helm:
+	cp -f ./charts/internal/addons/* ./charts/internal/cortex/templates/
+
 fetch-upstream-helm:
 	rm -rf ./charts/internal/cortex/*
 	curl -sSL https://github.com/PaloAltoNetworks/cortex-helm/releases/download/v${CORTEX_HELM_RELEASE_VERSION}/cortex-xdr-${CORTEX_HELM_RELEASE_VERSION}.tgz \
 		| tar -xz -C ./charts/internal/cortex --strip-components=1 cortex-xdr/
 	mv charts/internal/cortex/templates/_helpers.tpl charts/internal/cortex/templates/helpers.tpl
-	cp ./charts/internal/addons/* ./charts/internal/cortex/templates/
+	$(MAKE) patch-upstream-helm

@@ -1,8 +1,8 @@
-{{- $crd := lookup "apiextensions.k8s.io/v1" "CustomResourceDefinition" "" "clusterwidenetworkpolicies.metal-stack.io" }}
-{{- if $crd }}
+# After changing this file, please run `make patch-upstream-helm` and regenerate the CRD
+{{ if .Capabilities.APIVersions.Has "metal-stack.io/v1/ClusterwideNetworkPolicy" -}}
 {{- if .Values.xdr.proxyAddresses }}
 apiVersion: metal-stack.io/v1
-kind: ClusterWideNetworkPolicy
+kind: ClusterwideNetworkPolicy
 metadata:
   name: xdr-proxy-access
   namespace: {{ .Release.Namespace }}
