@@ -136,14 +136,15 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 		charts.CortextName: rc.Manifest(),
 	}
 
-	log.Info("reconciling extension", "configuration", data)
+	// log the generated manifest as base64
+	// log.Info("reconciling extension", "configuration", data)
 
 	err = managedresources.CreateForShoot(ctx, a.client, ex.GetNamespace(), managedResourceName, "", false, data)
 
 	if err != nil {
 		return fmt.Errorf("failed to apply chart: %w", err)
 	}
-	log.Info("reconciling extension", "configuration", xdrConfig)
+	log.Info("reconciled extension", "configuration", xdrConfig)
 	return nil
 
 }
