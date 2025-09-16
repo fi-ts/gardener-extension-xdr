@@ -9,6 +9,7 @@ import (
 	"github.com/fi-ts/gardener-extension-xdr/charts"
 	"github.com/fi-ts/gardener-extension-xdr/pkg/apis/xdr/v1alpha1"
 	"github.com/fi-ts/gardener-extension-xdr/pkg/imagevector"
+	extensionsconfigv1alpha1 "github.com/gardener/gardener/extensions/pkg/apis/config/v1alpha1"
 	"github.com/gardener/gardener/extensions/pkg/controller"
 	"github.com/gardener/gardener/extensions/pkg/controller/extension"
 	"github.com/gardener/gardener/extensions/pkg/util"
@@ -96,8 +97,13 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 			Name: "clusterwidenetworkpolicies.metal-stack.io",
 		},
 	}
+	_, shootClient, err := util.NewClientForShoot(ctx, a.client, charts.CortexNamespace, client.Options{}, extensionsconfigv1alpha1.RESTOptions{})
+
+	if err != nil {
+		return fmt.Errorf("failed to create shoot client: %w", err)
+	}
 	firewallProxyList := proxyList
-	err = a.client.Get(ctx, client.ObjectKeyFromObject(crd), crd)
+	err = shootClient.Get(ctx, client.ObjectKeyFromObject(crd), crd)
 	if err != nil {
 		log.Info("metal-stack firewall CRD not found, not creating ClusterwideNetworkPolicy", "error", err)
 		firewallProxyList = []string{}
