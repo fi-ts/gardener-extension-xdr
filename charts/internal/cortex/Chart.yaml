@@ -1,12 +1,7 @@
 apiVersion: v2
-
-name: cortex-xdr
-description: Cortex XDR agent helm chart
-
-type: application
-
-version: 1.8.0
-
 appVersion: 1.0.0
-
+description: Cortex XDR agent helm chart
 home: https://paloaltonetworks.com/
+name: cortex-xdr
+type: application
+version: 1.8.0

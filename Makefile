@@ -11,7 +11,7 @@ VERIFY                      := true
 LEADER_ELECTION             := false
 IGNORE_OPERATION_ANNOTATION := false
 WEBHOOK_CONFIG_URL          := localhost
-
+CORTEX_HELM_RELEASE_VERSION := 1.8.0
 GOLANGCI_LINT_VERSION := v1.64.6
 GO_VERSION := 1.24
 
@@ -101,3 +101,10 @@ push-to-gardener-local:
 		./cmd/gardener-extension-xdr
 	docker build -f Dockerfile.dev -t ghcr.io/fi-ts/gardener-extension-xdr:latest .
 	kind --name gardener-local load docker-image ghcr.io/fi-ts/gardener-extension-xdr:latest
+
+fetch-upstream-helm:
+	rm -rf ./charts/internal/cortex/*
+	curl -sSL https://github.com/PaloAltoNetworks/cortex-helm/releases/download/v${CORTEX_HELM_RELEASE_VERSION}/cortex-xdr-${CORTEX_HELM_RELEASE_VERSION}.tgz \
+		| tar -xz -C ./charts/internal/cortex --strip-components=1 cortex-xdr/
+	mv charts/internal/cortex/templates/_helpers.tpl charts/internal/cortex/templates/helpers.tpl
+
