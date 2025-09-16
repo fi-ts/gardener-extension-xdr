@@ -13,6 +13,8 @@ import (
 	"github.com/gardener/gardener/extensions/pkg/controller/extension"
 	"github.com/gardener/gardener/extensions/pkg/util"
 	extensionsv1alpha1 "github.com/gardener/gardener/pkg/apis/extensions/v1alpha1"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/fi-ts/gardener-extension-xdr/pkg/apis/config"
 	gardener "github.com/gardener/gardener/pkg/client/kubernetes"
@@ -88,8 +90,21 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 		endpointTags = fmt.Sprintf("%s;custom=%s", endpointTags, xdrConfig.CustomTag)
 	}
 
+	// check if the Metal Stack firewall CRD is installed, so no CWNPs are generated
+	crd := &apiextensionsv1.CustomResourceDefinition{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "clusterwidenetworkpolicies.metal-stack.io",
+		},
+	}
+	firewallProxyList := proxyList
+	err = a.client.Get(ctx, client.ObjectKeyFromObject(crd), crd)
+	if err != nil {
+		log.Info("metal-stack firewall CRD not found, not creating ClusterwideNetworkPolicy", "error", err)
+		firewallProxyList = []string{}
+	}
+
 	rc, err := ci.RenderEmbeddedFS(charts.InternalChart, filepath.Join("internal", charts.CortexChartsPath), charts.CortextName, charts.CortexNamespace, map[string]any{
-		"proxyAddresses": proxyList,
+		"proxyAddresses": firewallProxyList,
 		"namespace": map[string]any{
 			"create": false,
 			"name":   charts.CortexNamespace,
