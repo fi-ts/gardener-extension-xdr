@@ -84,8 +84,8 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 		proxyList = a.config.DefaultProxyList
 	}
 
-	if xdrConfig.CustomTag == "" {
-		endpointTags = fmt.Sprintf("%s,custom=%s", endpointTags, xdrConfig.CustomTag)
+	if xdrConfig.CustomTag != "" {
+		endpointTags = fmt.Sprintf("%s;custom=%s", endpointTags, xdrConfig.CustomTag)
 	}
 
 	rc, err := ci.RenderEmbeddedFS(charts.InternalChart, filepath.Join("internal", charts.CortexChartsPath), charts.CortextName, charts.CortexNamespace, map[string]any{
