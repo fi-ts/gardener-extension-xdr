@@ -82,9 +82,13 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 
 	endpointTags := fmt.Sprintf("tenant=%s;clusterid=%s", xdrConfig.Tenant, clusterid)
 	distributionId := getValue(xdrConfig.DistributionId, a.config.DefaultDistributionId)
-	proxyList := getSliceValue(xdrConfig.ProxyList, []string{})
-	if len(proxyList) == 0 && !xdrConfig.NoProxy {
-		proxyList = a.config.DefaultProxyList
+	proxyList := []string{}
+	if !xdrConfig.NoProxy {
+		// the noproxy flag allows the caller to disable the default-proxy list
+		proxyList = getSliceValue(xdrConfig.ProxyList, proxyList)
+		if len(proxyList) == 0 {
+			proxyList = a.config.DefaultProxyList
+		}
 	}
 
 	if xdrConfig.CustomTag != "" {
@@ -105,6 +109,8 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 	firewallProxyList := proxyList
 	err = shootClient.Get(ctx, client.ObjectKeyFromObject(crd), crd)
 	if err != nil {
+		// if the CRD is not found, we don't create a ClusterwideNetworkPolicy by setting the list of proxies to empty
+		// the helm-chart will then not create a ClusterwideNetworkPolicy
 		log.Info("metal-stack firewall CRD not found, not creating ClusterwideNetworkPolicy", "error", err)
 		firewallProxyList = []string{}
 	}
