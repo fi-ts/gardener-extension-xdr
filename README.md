@@ -1,8 +1,23 @@
 # Gardener Cortex XDR extension
 
-Provides a gardener extension for managing [Cortex XDR](https://www.paloaltonetworks.de/cortex/detection-and-response-10-must-haves) for a shoot cluster.
+This extension bundles the upstream Palo Alto Cortex XDR Helm chart from
+
+  https://github.com/PaloAltoNetworks/cortex-helm
+
+into a Gardener extension. It allows to install Cortex XDR on Gardener shoots
+running on metal-stack.
+
 
 ## Development
+
+
+Please use `make fetch-upstream-helm` to update the upstream Helm chart of a
+specific version specified by the `CORTEX_HELM_RELEASE_VERSION` variable in the
+Makefile.
+
+As we need additional ressources beneath the chart, there is an additional manifest
+for `ClusterwideNetworkPolicy` in `charts/internal/addons`. When changing this
+file, you have to copy it to the internal chart with `make patch-upstream-helm`.
 
 ### Setup local gardener
 
@@ -45,4 +60,23 @@ When making changes to the code, build and deploy locally using:
 make push-to-gardener-local
 ```
 
+# Agent Version
+
+The Cortex Helm chart does not specify the image version for the agent. You have
+to apply this version in the `values.yaml` file of the chart. This is done by
+configuring the `charts/images.yaml` file. Whenever there is a new version of
+the agent, please update the version in this file.
+
+# Runtime Notes
+
+The agent is running as a DaemonSet on each node of the shoot cluster. It is installed
+with the helm chart. As it is installed as a gardener extension, every change to the
+installed objects and data will be reconciled by the gardener controller.
+
+Please note that the chart is installed in the `kube-system` namespace which is
+a limitation of the gardener extension system. Unfortunately, we have some problems
+in this namespace with internet connectivity. The agent tried to reacht internet
+services with IPv6, although it is not supported by the shoot cluster. This results
+in a failure to connect to the internet services of Palo Alto Networks. In such
+cases you have to use a proxy to connect to the internet.
 

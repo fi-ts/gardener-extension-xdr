@@ -37,8 +37,7 @@ config:
     qps: 100
     burst: 130
   defaultDistributionId: "123"
-  defaultProxyList:
-    - http://localhost:8080
+  defaultProxyList: []
 
 gardener:
   version: ""

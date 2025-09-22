@@ -9,7 +9,9 @@ import (
 // XDRConfig defines the configuration for the xdr controller.
 type XDRConfig struct {
 	metav1.TypeMeta
+	NoProxy        bool
 	ProxyList      []string
 	DistributionId string
 	CustomTag      string
+	Tenant         string
 }

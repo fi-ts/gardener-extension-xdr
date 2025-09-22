@@ -4,20 +4,23 @@ import (
 	"context"
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	"github.com/fi-ts/gardener-extension-xdr/charts"
 	"github.com/fi-ts/gardener-extension-xdr/pkg/apis/xdr/v1alpha1"
 	"github.com/fi-ts/gardener-extension-xdr/pkg/imagevector"
+	extensionsconfigv1alpha1 "github.com/gardener/gardener/extensions/pkg/apis/config/v1alpha1"
 	"github.com/gardener/gardener/extensions/pkg/controller"
 	"github.com/gardener/gardener/extensions/pkg/controller/extension"
 	"github.com/gardener/gardener/extensions/pkg/util"
 	extensionsv1alpha1 "github.com/gardener/gardener/pkg/apis/extensions/v1alpha1"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/fi-ts/gardener-extension-xdr/pkg/apis/config"
 	gardener "github.com/gardener/gardener/pkg/client/kubernetes"
 	"github.com/gardener/gardener/pkg/utils/managedresources"
 	"github.com/go-logr/logr"
-	"github.com/metal-stack/metal-lib/pkg/tag"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -56,10 +59,8 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 		return fmt.Errorf("failed to get cluster: %w", err)
 	}
 
-	tm := tag.TagMap(cluster.Shoot.Annotations)
-	clusterid, _ := tm.Value(tag.ClusterID)
-	clustername, _ := tm.Value(tag.ClusterName)
-	tenant, _ := tm.Value(tag.ClusterTenant)
+	clusterid := cluster.Shoot.UID
+	clustername := cluster.Shoot.Name
 
 	cortextImage, err := imagevector.ImageVector().FindImage("cortex-agent")
 	if err != nil {
@@ -79,15 +80,43 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 		}
 	}
 
-	endpointTags := fmt.Sprintf("tenant=%s;clusterid=%s", tenant, clusterid)
+	endpointTags := fmt.Sprintf("tenant=%s;clusterid=%s", xdrConfig.Tenant, clusterid)
 	distributionId := getValue(xdrConfig.DistributionId, a.config.DefaultDistributionId)
-	proxyList := getSliceValue(xdrConfig.ProxyList, a.config.DefaultProxyList)
+	proxyList := []string{}
+	if !xdrConfig.NoProxy {
+		// the noproxy flag allows the caller to disable the default-proxy list
+		proxyList = getSliceValue(xdrConfig.ProxyList, proxyList)
+		if len(proxyList) == 0 {
+			proxyList = a.config.DefaultProxyList
+		}
+	}
 
-	if xdrConfig.CustomTag == "" {
-		endpointTags = fmt.Sprintf("%s,custom=%s", endpointTags, xdrConfig.CustomTag)
+	if xdrConfig.CustomTag != "" {
+		endpointTags = fmt.Sprintf("%s;custom=%s", endpointTags, xdrConfig.CustomTag)
+	}
+
+	// check if the Metal Stack firewall CRD is installed, so no CWNPs are generated
+	crd := &apiextensionsv1.CustomResourceDefinition{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "clusterwidenetworkpolicies.metal-stack.io",
+		},
+	}
+	_, shootClient, err := util.NewClientForShoot(ctx, a.client, ex.Namespace, client.Options{}, extensionsconfigv1alpha1.RESTOptions{})
+
+	if err != nil {
+		return fmt.Errorf("failed to create shoot client: %w", err)
+	}
+	firewallProxyList := proxyList
+	err = shootClient.Get(ctx, client.ObjectKeyFromObject(crd), crd)
+	if err != nil {
+		// if the CRD is not found, we don't create a ClusterwideNetworkPolicy by setting the list of proxies to empty
+		// the helm-chart will then not create a ClusterwideNetworkPolicy
+		log.Info("metal-stack firewall CRD not found, not creating ClusterwideNetworkPolicy", "error", err)
+		firewallProxyList = []string{}
 	}
 
 	rc, err := ci.RenderEmbeddedFS(charts.InternalChart, filepath.Join("internal", charts.CortexChartsPath), charts.CortextName, charts.CortexNamespace, map[string]any{
+		"proxyAddresses": firewallProxyList,
 		"namespace": map[string]any{
 			"create": false,
 			"name":   charts.CortexNamespace,
@@ -96,7 +125,7 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 			"endpointTags":   endpointTags,
 			"clusterName":    clustername,
 			"distributionId": distributionId,
-			"proxyList":      proxyList,
+			"proxyList":      strings.Join(proxyList, ","),
 		},
 		"daemonset": map[string]any{
 			"image": map[string]any{
@@ -113,14 +142,15 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 		charts.CortextName: rc.Manifest(),
 	}
 
-	log.Info("reconciling extension", "configuration", data)
+	// log the generated manifest as base64
+	// log.Info("reconciling extension", "configuration", data)
 
 	err = managedresources.CreateForShoot(ctx, a.client, ex.GetNamespace(), managedResourceName, "", false, data)
 
 	if err != nil {
 		return fmt.Errorf("failed to apply chart: %w", err)
 	}
-	log.Info("reconciling extension", "configuration", xdrConfig)
+	log.Info("reconciled extension", "configuration", xdrConfig)
 	return nil
 
 }

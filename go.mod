@@ -19,6 +19,8 @@ require (
 	sigs.k8s.io/controller-runtime v0.20.2
 )
 
+require go.opentelemetry.io/otel/trace v1.35.0 // indirect
+
 require (
 	dario.cat/mergo v1.0.1 // indirect
 	github.com/BurntSushi/toml v1.4.0 // indirect
@@ -69,7 +71,6 @@ require (
 	github.com/mailru/easyjson v0.9.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/metal-stack/metal-lib v0.23.1
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/moby/spdystream v0.5.0 // indirect
@@ -118,7 +119,7 @@ require (
 	helm.sh/helm/v3 v3.17.1 // indirect
 	istio.io/api v1.24.3 // indirect
 	istio.io/client-go v1.24.2 // indirect
-	k8s.io/apiextensions-apiserver v0.32.2 // indirect
+	k8s.io/apiextensions-apiserver v0.32.2
 	k8s.io/autoscaler/vertical-pod-autoscaler v1.2.2 // indirect
 	k8s.io/client-go v0.32.2 // indirect
 	k8s.io/gengo v0.0.0-20230829151522-9cce18d56c01 // indirect
