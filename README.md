@@ -22,7 +22,7 @@ installed objects and data will be reconciled by the gardener controller.
 
 Please note that the chart is installed in the `kube-system` namespace which is
 a limitation of the gardener extension system. Unfortunately, we have some problems
-in this namespace with internet connectivity. The agent tried to reacht internet
+in this namespace with internet connectivity. The agent tried to reach internet
 services with IPv6, although it is not supported by the shoot cluster. This results
 in a failure to connect to the internet services of Palo Alto Networks. In such
 cases you have to use a proxy to connect to the internet.
