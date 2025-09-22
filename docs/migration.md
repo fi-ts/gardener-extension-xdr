@@ -1,2 +1,0 @@
-# XDR extension
-
