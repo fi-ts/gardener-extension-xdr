@@ -59,7 +59,7 @@ helm upgrade --install <release_name> <helm_chart> \
 
 Note: to pick a specific version, use the `--version` flag.
 
-If the secret was created seperately then you can just supply the secret name (make sure the secret and the agent are in the same namespace):
+If the secret was created separately then you can just supply the secret name (make sure the secret and the agent are in the same namespace):
 ```
 helm upgrade --install <release_name> <helm chart> \
   --set daemonset.image.repository=<repository_url> \

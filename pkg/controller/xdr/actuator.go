@@ -21,6 +21,7 @@ import (
 	gardener "github.com/gardener/gardener/pkg/client/kubernetes"
 	"github.com/gardener/gardener/pkg/utils/managedresources"
 	"github.com/go-logr/logr"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -92,6 +93,7 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 	}
 
 	if xdrConfig.CustomTag != "" {
+		// TODO: probably requires a validation?
 		endpointTags = fmt.Sprintf("%s;custom=%s", endpointTags, xdrConfig.CustomTag)
 	}
 
@@ -109,9 +111,13 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 	firewallProxyList := proxyList
 	err = shootClient.Get(ctx, client.ObjectKeyFromObject(crd), crd)
 	if err != nil {
+		if !apierrors.IsNotFound(err) {
+			return fmt.Errorf("unable to retrieve firewall CRD: %w", err)
+		}
+
 		// if the CRD is not found, we don't create a ClusterwideNetworkPolicy by setting the list of proxies to empty
 		// the helm-chart will then not create a ClusterwideNetworkPolicy
-		log.Info("metal-stack firewall CRD not found, not creating ClusterwideNetworkPolicy", "error", err)
+		log.Info("metal-stack firewall CRD not found, not creating ClusterwideNetworkPolicy")
 		firewallProxyList = []string{}
 	}
 
