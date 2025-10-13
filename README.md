@@ -16,7 +16,7 @@ the agent, please update the version in this file.
 
 # Runtime Notes
 
-The agent is running as a DaemonSet on each node of the shoot cluster. It is installed
+The agent is running as a `DaemonSet` on each node of the shoot cluster. It is installed
 with the helm chart. As it is installed as a gardener extension, every change to the
 installed objects and data will be reconciled by the gardener controller.
 
@@ -29,12 +29,11 @@ cases you have to use a proxy to connect to the internet.
 
 ## Development
 
-
 Please use `make fetch-upstream-helm` to update the upstream Helm chart of a
 specific version specified by the `CORTEX_HELM_RELEASE_VERSION` variable in the
 Makefile.
 
-As we need additional ressources beneath the chart, there is an additional manifest
+As we need additional resources beneath the chart, there is an additional manifest
 for `ClusterwideNetworkPolicy` in `charts/internal/addons`. When changing this
 file, you have to copy it to the internal chart with `make patch-upstream-helm`.
 
@@ -78,5 +77,3 @@ When making changes to the code, build and deploy locally using:
 ```bash
 make push-to-gardener-local
 ```
-
-

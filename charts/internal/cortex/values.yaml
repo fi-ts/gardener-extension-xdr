@@ -55,7 +55,7 @@ agent:
   # Tags describing the endpoint, for example: "main,dev-machine1,test 123"
   endpointTags: ""
 
-  # Name of the kuberenetes cluster - optional
+  # Name of the kubernetes cluster - optional
   clusterName: ""
 
 daemonset:
