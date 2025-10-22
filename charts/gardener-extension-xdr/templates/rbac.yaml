@@ -87,8 +87,13 @@ rules:
   - leases
   resourceNames:
   - extension-xdr-leader-election
+  - gardener-extension-heartbeat
   verbs:
+  - create
   - update
+  - list
+  - watch
+  - patch
   - get
 # dns records seem to be a regression?
 - apiGroups:
