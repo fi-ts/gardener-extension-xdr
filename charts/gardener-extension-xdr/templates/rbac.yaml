@@ -87,6 +87,7 @@ rules:
   - leases
   resourceNames:
   - extension-xdr-leader-election
+  - gardener-extension-heartbeat
   verbs:
   - update
   - get
