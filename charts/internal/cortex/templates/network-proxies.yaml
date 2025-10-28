@@ -37,7 +37,7 @@ spec:
   {{- if and $parts._0 $parts._1 }}
   - to:
     - ipBlock:
-        cidr:{{ $parts._0 }}/32
+        cidr: {{ $parts._0 }}/32
     ports:
     - protocol: TCP
       port: {{ $parts._1 | int }}
