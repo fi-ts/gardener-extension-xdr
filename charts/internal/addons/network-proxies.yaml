@@ -19,5 +19,29 @@ spec:
       port: {{ $parts._1 | int }}
   {{- end }}
   {{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-to-cortex-proxy
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: cortex-xdr
+  policyTypes:
+  - Egress
+  egress:
+  {{- range .Values.proxyAddresses }}
+  {{- $parts := split ":" . }}
+  {{- if and $parts._0 $parts._1 }}
+  - to:
+    - ipBlock:
+        cidr:{{ $parts._0 }}/32
+    ports:
+    - protocol: TCP
+      port: {{ $parts._1 | int }}
+  {{- end }}
+  {{- end }}
 {{- end }}
 
