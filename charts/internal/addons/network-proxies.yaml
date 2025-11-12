@@ -1,5 +1,4 @@
 # After changing this file, please run `make patch-upstream-helm` and regenerate the CRD
-{{- if .Values.proxyAddresses }}
 apiVersion: metal-stack.io/v1
 kind: ClusterwideNetworkPolicy
 metadata:
@@ -9,6 +8,12 @@ metadata:
     labels: {{- include "cortex-xdr.labels" . | nindent 4 }}
 spec:
   egress:
+  - toFQDNs:
+    - matchName: registry.fits.cloud
+    ports:
+    - protocol: TCP
+      port: 443
+{{- if .Values.proxyAddresses }}
   {{- range .Values.proxyAddresses }}
   {{- $parts := split ":" . }}
   {{- if and $parts._0 $parts._1 }}
@@ -37,7 +42,7 @@ spec:
   {{- if and $parts._0 $parts._1 }}
   - to:
     - ipBlock:
-        cidr:{{ $parts._0 }}/32
+        cidr: {{ $parts._0 }}/32
     ports:
     - protocol: TCP
       port: {{ $parts._1 | int }}
