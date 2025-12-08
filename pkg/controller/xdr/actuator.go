@@ -183,7 +183,12 @@ func (a *actuator) Restore(ctx context.Context, log logr.Logger, ex *extensionsv
 
 // Migrate the Extension resource.
 func (a *actuator) Migrate(ctx context.Context, log logr.Logger, ex *extensionsv1alpha1.Extension) error {
-	return nil
+	log.Info("migrating managed resource")
+	err := managedresources.DeleteForShoot(ctx, a.client, ex.GetNamespace(), managedResourceName)
+	if err != nil {
+		log.Error(err, "cannot delete managed resource")
+	}
+	return err
 }
 
 func getValue[T comparable](val T, defVal T) T {
