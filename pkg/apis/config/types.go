@@ -12,7 +12,24 @@ type ControllerConfiguration struct {
 	metav1.TypeMeta
 
 	// HealthCheckConfig is the config for the health check controller
-	HealthCheckConfig     *healthcheckconfig.HealthCheckConfig
-	DefaultProxyList      []string
-	DefaultDistributionId string
+	HealthCheckConfig *healthcheckconfig.HealthCheckConfig
+	TenantConfigs     TenantConfigs
+}
+
+type TenantConfig struct {
+	TenantId       string   `json:"tenantId"`
+	ProxyList      []string `json:"proxyList,omitempty"`
+	DistributionId string   `json:"distributionId,omitempty"`
+	CustomTag      string   `json:"customTag,omitempty"`
+}
+
+type TenantConfigs []TenantConfig
+
+func (tc TenantConfigs) GetTenantConfig(tenantId string) *TenantConfig {
+	for _, config := range tc {
+		if config.TenantId == tenantId {
+			return &config
+		}
+	}
+	return nil
 }

@@ -81,19 +81,26 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 		}
 	}
 
+	tenantConfig := a.config.TenantConfigs.GetTenantConfig(xdrConfig.Tenant)
+	if tenantConfig == nil {
+		return fmt.Errorf("tenant config not found for tenant %s", xdrConfig.Tenant)
+	}
+	if tenantConfig.DistributionId == "" {
+		return fmt.Errorf("distribution id not found for tenant %s", xdrConfig.Tenant)
+	}
+
 	endpointTags := fmt.Sprintf("tenant=%s;clusterid=%s", xdrConfig.Tenant, clusterid)
-	distributionId := getValue(xdrConfig.DistributionId, a.config.DefaultDistributionId)
+	if tenantConfig.CustomTag != "" {
+		endpointTags = fmt.Sprintf("%s;customtenant=%s", endpointTags, tenantConfig.CustomTag)
+	}
+	//distributionId := getValue(xdrConfig.DistributionId, &a.config.TenantConfigs[])
 	proxyList := []string{}
 	if !xdrConfig.NoProxy {
 		// the noproxy flag allows the caller to disable the default-proxy list
-		proxyList = getSliceValue(xdrConfig.ProxyList, proxyList)
-		if len(proxyList) == 0 {
-			proxyList = a.config.DefaultProxyList
-		}
+		proxyList = tenantConfig.ProxyList
 	}
 
 	if xdrConfig.CustomTag != "" {
-		// TODO: probably requires a validation?
 		endpointTags = fmt.Sprintf("%s;custom=%s", endpointTags, xdrConfig.CustomTag)
 	}
 
@@ -130,7 +137,7 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 		"agent": map[string]any{
 			"endpointTags":   endpointTags,
 			"clusterName":    clustername,
-			"distributionId": distributionId,
+			"distributionId": tenantConfig.DistributionId,
 			"proxyList":      strings.Join(proxyList, ","),
 		},
 		"daemonset": map[string]any{
@@ -189,19 +196,4 @@ func (a *actuator) Migrate(ctx context.Context, log logr.Logger, ex *extensionsv
 		log.Error(err, "cannot delete managed resource")
 	}
 	return err
-}
-
-func getValue[T comparable](val T, defVal T) T {
-	var zero T
-	if val == zero {
-		return defVal
-	}
-	return val
-}
-
-func getSliceValue[S ~[]T, T comparable](val S, defVal S) S {
-	if len(val) == 0 {
-		return defVal
-	}
-	return val
 }
