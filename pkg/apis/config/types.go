@@ -1,6 +1,8 @@
 package config
 
 import (
+	"strings"
+
 	healthcheckconfig "github.com/gardener/gardener/extensions/pkg/apis/config/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -27,7 +29,8 @@ type TenantConfigs []TenantConfig
 
 func (tc TenantConfigs) GetTenantConfig(tenantId string) *TenantConfig {
 	for _, config := range tc {
-		if config.TenantId == tenantId {
+		// compare tenant-ids without case, so "ft" is same as "Ft"
+		if strings.EqualFold(config.TenantId, tenantId) {
 			return &config
 		}
 	}
