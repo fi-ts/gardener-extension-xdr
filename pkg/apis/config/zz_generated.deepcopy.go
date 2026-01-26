@@ -25,7 +25,7 @@ func (in *ControllerConfiguration) DeepCopyInto(out *ControllerConfiguration) {
 	}
 	if in.TenantConfigs != nil {
 		in, out := &in.TenantConfigs, &out.TenantConfigs
-		*out = make(TenantConfigs, len(*in))
+		*out = make([]TenantConfig, len(*in))
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}

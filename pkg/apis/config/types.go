@@ -15,7 +15,7 @@ type ControllerConfiguration struct {
 
 	// HealthCheckConfig is the config for the health check controller
 	HealthCheckConfig *healthcheckconfig.HealthCheckConfig
-	TenantConfigs     TenantConfigs
+	TenantConfigs     []TenantConfig
 }
 
 type TenantConfig struct {

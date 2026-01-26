@@ -82,7 +82,8 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 	}
 
 	log.Info("tenant configs", "configs", a.config.TenantConfigs, "tenant", xdrConfig.Tenant)
-	tenantConfig := a.config.TenantConfigs.GetTenantConfig(xdrConfig.Tenant)
+	tcs := config.TenantConfigs(a.config.TenantConfigs)
+	tenantConfig := tcs.GetTenantConfig(xdrConfig.Tenant)
 	if tenantConfig == nil {
 		return fmt.Errorf("tenant config not found for tenant %s", xdrConfig.Tenant)
 	}
