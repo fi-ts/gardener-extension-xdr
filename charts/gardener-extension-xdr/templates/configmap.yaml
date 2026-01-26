@@ -18,6 +18,6 @@ data:
       burst: {{ required ".Values.config.clientConnection.burst is required" .Values.config.clientConnection.burst }}
 {{- end }}
 {{- if .Values.config.tenantConfigs }}
-    tenantConfigs: "{{ .Values.config.tenantConfigs }}"
-{{- end }}
+    tenantConfigs:
+    {{- toYaml .Values.config.tenantConfigs | nindent 6 }}
 {{- end }}
