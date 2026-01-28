@@ -50,7 +50,7 @@ func RegisterConversions(s *runtime.Scheme) error {
 
 func autoConvert_v1alpha1_ControllerConfiguration_To_config_ControllerConfiguration(in *ControllerConfiguration, out *config.ControllerConfiguration, s conversion.Scope) error {
 	out.HealthCheckConfig = (*configv1alpha1.HealthCheckConfig)(unsafe.Pointer(in.HealthCheckConfig))
-	out.TenantConfigs = *(*[]config.TenantConfig)(unsafe.Pointer(&in.TenantConfigs))
+	out.TenantConfigs = *(*config.TenantConfigs)(unsafe.Pointer(&in.TenantConfigs))
 	return nil
 }
 
