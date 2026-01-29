@@ -17,10 +17,7 @@ data:
       qps: {{ required ".Values.config.clientConnection.qps is required" .Values.config.clientConnection.qps }}
       burst: {{ required ".Values.config.clientConnection.burst is required" .Values.config.clientConnection.burst }}
 {{- end }}
-{{- if .Values.config.defaultDistributionId }}
-    defaultDistributionId: "{{ .Values.config.defaultDistributionId }}"
-{{- end }}
-{{- if .Values.config.defaultProxyList }}
-    defaultProxyList:
-{{ .Values.config.defaultProxyList | toYaml | nindent 6 }}
+{{- if .Values.config.tenantConfigs }}
+    tenantConfigs:
+    {{- toYaml .Values.config.tenantConfigs | nindent 6 }}
 {{- end }}

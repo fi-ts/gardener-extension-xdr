@@ -15,6 +15,14 @@ type ControllerConfiguration struct {
 	// +optional
 	HealthCheckConfig *healthcheckconfigv1alpha1.HealthCheckConfig `json:"healthCheckConfig,omitempty"`
 
-	DefaultProxyList      []string `json:"defaultProxyList,omitempty"`
-	DefaultDistributionId string   `json:"defaultDistributionId,omitempty"`
+	TenantConfigs TenantConfigs `json:"tenantConfigs,omitempty"`
 }
+
+type TenantConfig struct {
+	TenantId       string   `json:"tenantId"`
+	ProxyList      []string `json:"proxyList,omitempty"`
+	DistributionId string   `json:"distributionId"`
+	CustomTag      string   `json:"customTag,omitempty"`
+}
+
+type TenantConfigs []TenantConfig

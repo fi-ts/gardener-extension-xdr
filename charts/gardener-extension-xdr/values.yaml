@@ -36,8 +36,12 @@ config:
     contentType: application/json
     qps: 100
     burst: 130
-  defaultDistributionId: "123"
-  defaultProxyList: []
-
+  tenantConfigs:
+    - tenantId: "ft"
+      distributionId: "123"
+      proxyList: []
+    - tenantId: "fits"
+      distributionId: "123"
+      proxyList: []
 gardener:
   version: ""
