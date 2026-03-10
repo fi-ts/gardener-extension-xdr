@@ -1,4 +1,4 @@
 images:
 - name: cortex-agent
   repository: registry.fits.cloud/cloud-native/images/cortex-xdr/cortex-agent
-  tag: "9.0.0.141085"
+  tag: "9.1.0.144052"
