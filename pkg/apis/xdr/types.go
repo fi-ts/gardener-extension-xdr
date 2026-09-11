@@ -12,4 +12,5 @@ type XDRConfig struct {
 	NoProxy   bool
 	CustomTag string
 	Tenant    string
+	ProxyList []string
 }

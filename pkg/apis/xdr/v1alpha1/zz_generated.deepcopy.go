@@ -17,6 +17,11 @@ import (
 func (in *XDRConfig) DeepCopyInto(out *XDRConfig) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
+	if in.ProxyList != nil {
+		in, out := &in.ProxyList, &out.ProxyList
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
 	return
 }
 
