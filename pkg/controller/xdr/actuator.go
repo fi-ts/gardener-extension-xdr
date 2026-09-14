@@ -97,8 +97,14 @@ func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extension
 	//distributionId := getValue(xdrConfig.DistributionId, &a.config.TenantConfigs[])
 	proxyList := []string{}
 	if !xdrConfig.NoProxy {
-		// the noproxy flag allows the caller to disable the default-proxy list
-		proxyList = tenantConfig.ProxyList
+		// the noproxy flag allows the caller to disable the proxy list
+		// if the xdr config of the cluster contains its own proxy list, it takes precedence
+		// otherwise the proxy list of the tenant config is used
+		if len(xdrConfig.ProxyList) > 0 {
+			proxyList = xdrConfig.ProxyList
+		} else {
+			proxyList = tenantConfig.ProxyList
+		}
 	}
 
 	if xdrConfig.CustomTag != "" {

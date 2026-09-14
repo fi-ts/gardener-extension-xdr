@@ -10,6 +10,8 @@
 package v1alpha1
 
 import (
+	unsafe "unsafe"
+
 	xdr "github.com/fi-ts/gardener-extension-xdr/pkg/apis/xdr"
 	conversion "k8s.io/apimachinery/pkg/conversion"
 	runtime "k8s.io/apimachinery/pkg/runtime"
@@ -39,6 +41,7 @@ func autoConvert_v1alpha1_XDRConfig_To_xdr_XDRConfig(in *XDRConfig, out *xdr.XDR
 	out.NoProxy = in.NoProxy
 	out.CustomTag = in.CustomTag
 	out.Tenant = in.Tenant
+	out.ProxyList = *(*[]string)(unsafe.Pointer(&in.ProxyList))
 	return nil
 }
 
@@ -51,6 +54,7 @@ func autoConvert_xdr_XDRConfig_To_v1alpha1_XDRConfig(in *xdr.XDRConfig, out *XDR
 	out.NoProxy = in.NoProxy
 	out.CustomTag = in.CustomTag
 	out.Tenant = in.Tenant
+	out.ProxyList = *(*[]string)(unsafe.Pointer(&in.ProxyList))
 	return nil
 }
 

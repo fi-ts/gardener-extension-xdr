@@ -18,6 +18,10 @@ spec:
       apiVersion: xdr.metal.extensions.gardener.cloud/v1alpha1
       kind: XDRConfig
       distributionId: abc
+      # optional: cluster-specific proxy list, overrides the proxy list of the tenant config
+      # proxyList:
+      # - 10.0.0.1:8000
+      # - 10.0.0.2:9000
       # Your configuration here
   networking:
     type: calico
